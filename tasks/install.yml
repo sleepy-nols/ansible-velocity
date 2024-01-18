@@ -1,0 +1,22 @@
+---
+
+- name: Download Velocity
+  include_tasks: download.yml
+
+- name: Add an unfinished file, to allow cleanup on successful finalize
+  file:
+    path: '{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}'
+    state: touch
+
+- name: Add symlinks from the new release to the shared folder
+  file:
+    path: '{{ deploy_helper.shared_path }}/velocity.jar'
+    src: '{{ deploy_helper.new_release_path }}/velocity-{{ velocity_version }}.jar'
+    owner: "{{ velocity_user }}"
+    group: "{{ velocity_group }}"
+    state: link
+
+- name: Configure Velocity
+  template:
+    src: "templates/velocity-config.toml.jinja"
+    dest: '{{ deploy_helper.shared_path }}/velocity.toml'

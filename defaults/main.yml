@@ -1,0 +1,9 @@
+---
+velocity_version: stable
+velocity_name: velocity
+velocity_unix_user: "{{ velocity_name }}"
+velocity_unix_group: "{{ velocity_name }}"
+velocity_rootdir: "/opt/velocity"
+
+velocity_skip_install_java: false
+velocity_java_executable: /usr/bin/java

@@ -1,0 +1,22 @@
+---
+
+- name: Create user
+  user:
+    name: "{{ velocity_user }}"
+    state: present
+
+- name: Install Java
+  apt:
+    pkg: default-jre
+  when: not (velocity_skip_install_java | bool)
+
+- name: Initialzie deploy helper
+  deploy_helper:
+    path: "{{ velocity_rootdir }}"
+    state: "present"
+    release: "{{ velocity_version }}"
+
+- name:
+  file:
+    path: "{{ deploy_helper.new_release_path }}"
+    state: directory

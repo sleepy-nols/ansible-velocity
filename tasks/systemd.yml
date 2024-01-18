@@ -1,0 +1,27 @@
+---
+
+- name: Make systemd unit dir
+  file:
+    path:
+      - "/etc/systemd/system/{{ velocity_user }}.service.d"
+      - "/etc/systemd/system/{{ velocity_user }}.socket.d"
+    state: directory
+    mode: 755
+    owner: "root"
+    group: "root"
+
+- name: Make systemd service
+  template:
+    src: "templates/velocity.service.jinja"
+    dest: "/etc/systemd/system/{{ velocity_user }}.service.d/{{ velocity_user }}.service"
+    mode: 755
+    owner: "root"
+    group: "root"
+
+- name: Make systemd service
+  template:
+    src: "templates/velocity.socket.jinja"
+    dest: "/etc/systemd/system/{{ velocity_user }}.socket.d/{{ velocity_user }}.socket"
+    mode: 755
+    owner: "root"
+    group: "root"

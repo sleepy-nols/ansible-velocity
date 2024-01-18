@@ -1,0 +1,58 @@
+---
+
+- name: Get latest Velocity version
+  uri:
+    url: "https://api.papermc.io/v2/projects/velocity"
+    method: GET
+  register: velocity_version_info
+  when: velocity_version is in velocity_available_relaese_branches
+
+- set_fact:
+    velocity_latest_versions: |
+      [{%- if velocity_version in ['stable', 'snapshot'] -%}
+        {%- for version in velocity_version_info.json.versions -%}
+          {% set ergebnis = version | regex_search('\\d+\\.\\d+\\.\\d+' + ('' if velocity_version == 'stable' else "-SNAPSHOT") + '$') %}
+          {%- if ergebnis -%}
+            {{- version | to_json -}},
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+          {{- velocity_version | tojson -}}
+      {%- endif -%}]
+
+- name: Set latest Velocity version
+  set_fact:
+    velocity_version: "{{ velocity_latest_versions[-1] }}"
+
+- name: Get Velocity build info
+  uri:
+    url: "https://api.papermc.io/v2/projects/velocity/versions/{{ velocity_version }}/builds"
+    method: GET
+  register: velocity_build_info
+
+- name: Set latest Velocity build and checksum
+  set_fact:
+    velocity_latest_build: "{{ velocity_build_info.json.builds[-1].build }}"
+    velocity_checksum: "{{ velocity_build_info.json.builds[-1].downloads.application.sha256 }}"
+  when: velocity_build is not defined or velocity_build|string|length==0
+
+- name: Build download URI
+  set_fact:
+    velocity_url: "https://api.papermc.io/v2/projects/velocity/versions/{{ velocity_version }}/builds/{{ velocity_build | default(velocity_latest_build) }}/downloads/velocity-{{ velocity_version }}-{{ velocity_build | default(velocity_latest_build) }}.jar"
+  when: velocity_url is not defined or velocity_url|length==0
+
+- name: Download Velocity proxy
+  get_url:
+    url: "{{ velocity_url }}"
+    dest: "{{ deploy_helper.new_release_path }}/velocity-{{ velocity_version }}.jar"
+    owner: "{{ velocity_user }}"
+    group: "{{ velocity_group }}"
+    checksum: "sha256:{{ velocity_checksum }}"
+    mode: '0755'
+
+- name: Finalize the deploy, removing the unfinished file and switching the symlink
+  deploy_helper:
+    path: "{{ velocity_rootdir }}"
+    release: '{{ deploy_helper.new_release }}'
+    state: finalize
+

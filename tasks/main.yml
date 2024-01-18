@@ -1,0 +1,15 @@
+---
+
+- name: Prepare host
+  include_tasks: prepare_host.yml
+
+- name: Download Velocity
+  include_tasks: download.yml
+
+- name: Install Velocity
+  include_tasks: install.yml
+
+
+# handle config
+
+# handle restart\reload with handler

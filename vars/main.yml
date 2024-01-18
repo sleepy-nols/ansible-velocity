@@ -1,0 +1,4 @@
+---
+velocity_available_release_branches:
+  - "stable"
+  - "snapshot"
