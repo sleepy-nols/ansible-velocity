@@ -5,7 +5,7 @@ Ansible role to install and configure a Veloticy Minecraft proxy on Debian-based
 ![ansible-lint](https://github.com/sleepy-nols/ansible-velocity/actions/workflows/ansible-lint.yml/badge.svg)
 ![push-galaxy](https://github.com/sleepy-nols/ansible-velocity/actions/workflows/ansible-galaxy-push-role.yml/badge.svg)
 
-
+---
 ### Install
 
 Install via Ansible Galaxy or clone the Repo.
@@ -15,11 +15,13 @@ ansible-galaxy role install sleepy-nols.veloticy
 git clone git@github.com:sleepy-nols/ansible-velocity.git
 ```
 
+---
 ### Variables and Defaults
 
 The default config can be found [here](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml).
 Config documentation can be found [here](https://docs.papermc.io/velocity/configuration).
 
+---
 #### Mandatory:
 
 ```yml
@@ -49,9 +51,9 @@ velocity_forced_hosts:
 Bind specific domains to servers.
 
 
-**Defaults are taken from the [current](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml) default config, but are not set until defined, to allow new versions to set updated defaults. They may need to be updated here sometime.**
+**Defaults are taken from the [current](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml) default config, but are not set until defined to allow new versions to set updated defaults. They may need to be updated here sometime.**
 
-
+---
 ##### Velocity config: #####
 
 ```yml
@@ -134,6 +136,8 @@ velocity_config_enable_player_address_logging: True
 ```
 If disabled, player IP addresses will be replaced by <ip address withheld> in logs.
 
+
+---
 ##### Velocity advanced config:
 ```yml
 velocity_config_advanced_compression_threshold: 256
@@ -200,6 +204,8 @@ velocity_config_advanced_log_player_connections: True
 ```
 Enables logging of player connections when connecting to the proxy, switching servers and disconnecting from the proxy.
 
+
+---
 ##### Velocity query config:
 ```yml
 velocity_config_query_enabled: False
@@ -220,6 +226,7 @@ velocity_config_query_show_plugins: False
 ```
 Whether or not Velocity plugins are included in the query responses.
 
+---
 ### Example Playbook
 
 ```yml
@@ -234,11 +241,12 @@ Whether or not Velocity plugins are included in the query responses.
       - "lobby"
 ```
 
-
+---
 ### Contributing
 
 Contributions and bug reports are welcome :). Please point merge requests at devel.
 
+---
 ### License
 
 GPLv3
