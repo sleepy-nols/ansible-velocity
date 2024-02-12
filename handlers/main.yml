@@ -1,0 +1,17 @@
+---
+- name: Reload systemd
+  service:
+    daemon_reload: true
+
+- name: Restart Velocity service
+  service:
+    name: "{{ velocity_name }}.service"
+    state: restarted
+    enabled: true
+  when: not (velocity_skip_restart | bool)
+
+- name: Restart Velocity socket
+  service:
+    name: "{{ velocity_name }}.socket"
+    state: restarted
+    enabled: true

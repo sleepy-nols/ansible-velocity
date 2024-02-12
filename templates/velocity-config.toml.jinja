@@ -2,96 +2,60 @@
 #
 # {{ ansible_managed }}
 #
+{%- if velocity_forced_hosts is not defined %}
+forced-hosts = {}
+{%- endif -%}
+{%- if velocity_config_advanced_compression_threshold is not defined %}
+advanced = {}
+{%- endif -%}
+{%- if (velocity_config_query_enabled is not defined) or (velocity_config_query_port is not defined) or (velocity_config_query_map is not defined) or (velocity_config_query_show_plugins is not defined) %}
+query = {}
+{%- endif %}
+forwarding-secret = "{{ velocity_forwarding_secret }}"
 
-{% if velocity_config_version is defined %}config-version = "{{ velocity_config_version }}"{% endif %}
-
-{% if velocity_config_bind is defined %}bind = "{{ velocity_config_bind }}"{% endif %}
-
-{% if velocity_config_motd is defined %}motd = "{{ velocity_config_motd }}"{% endif %}
-
-{% if velocity_config_show_max_players is defined %}show-max-players = {{ velocity_config_show_max_players }}{% endif %}
-
-{% if velocity_config_online_mode is defined %}online-mode = {{ velocity_config_online_mode | bool | lower }}{% endif %}
-
-{% if velocity_config_force_key_authentication is defined %}force-key-authentication = {{ velocity_config_force_key_authentication | bool | lower }}{% endif %}
-
-{% if velocity_config_prevent_client_proxy_connections is defined %}prevent-client-proxy-connections = {{ velocity_config_prevent_client_proxy_connections | bool | lower }}{% endif %}
-
-{% if velocity_config_player_info_forwarding_mode is defined %}player-info-forwarding-mode = "{{ velocity_config_player_info_forwarding_mode | upper }}"{% endif %}
-
-{% if velocity_config_forwarding_secret_file is defined %}forwarding-secret-file = "{{ velocity_config_forwarding_secret_file }}"{% endif %}
-
-{% if velocity_config_announce_forge is defined %}announce-forge = {{ velocity_config_announce_forge | bool | lower }}{% endif %}
-
-{% if velocity_config_kick_existing_players is defined %}kick-existing-players = {{ velocity_config_kick_existing_players | bool | lower }}{% endif %}
-
-{% if velocity_config_ping_passthrough is defined %}ping-passthrough = "{{ velocity_config_ping_passthrough | upper }}"{% endif %}
-
-{% if velocity_config_enable_player_address_logging is defined %}enable-player-address-logging = {{ velocity_config_enable_player_address_logging | bool | lower }}{% endif %}
-
+{%- if velocity_config_version is defined -%}config-version = "{{ velocity_config_version }}"{%- endif %}
+{%- if velocity_config_bind is defined -%}bind = "{{ velocity_config_bind }}"{%- endif %}
+{%- if velocity_config_motd is defined -%}motd = "{{ velocity_config_motd }}"{%- endif %}
+{%- if velocity_config_show_max_players is defined -%}show-max-players = {{ velocity_config_show_max_players }}{%- endif %}
+{%- if velocity_config_online_mode is defined -%}online-mode = {{ velocity_config_online_mode | bool | lower }}{%- endif %}
+{%- if velocity_config_force_key_authentication is defined -%}force-key-authentication = {{ velocity_config_force_key_authentication | bool | lower }}{%- endif %}
+{%- if velocity_config_prevent_client_proxy_connections is defined -%}prevent-client-proxy-connections = {{ velocity_config_prevent_client_proxy_connections | bool | lower }}{%- endif %}
+{%- if velocity_config_player_info_forwarding_mode is defined -%}player-info-forwarding-mode = "{{ velocity_config_player_info_forwarding_mode | upper }}"{%- endif %}
+{%- if velocity_config_forwarding_secret_file is defined -%}forwarding-secret-file = "{{ velocity_config_forwarding_secret_file }}"{%- endif %}
+{%- if velocity_config_announce_forge is defined -%}announce-forge = {{ velocity_config_announce_forge | bool | lower }}{%- endif %}
+{%- if velocity_config_kick_existing_players is defined -%}kick-existing-players = {{ velocity_config_kick_existing_players | bool | lower }}{%- endif %}
+{%- if velocity_config_ping_passthrough is defined -%}ping-passthrough = "{{ velocity_config_ping_passthrough | upper }}"{%- endif %}
+{%- if velocity_config_enable_player_address_logging is defined -%}enable-player-address-logging = {{ velocity_config_enable_player_address_logging | bool | lower }}{%- endif %}
 
 [servers]
-{% for key in velocity_servers.keys() -%}
-{{- key }} = "{{ velocity_servers[key] }}"
-{% endfor %}
-
-try = [
-{%- for item in velocity_servers_try %}
-    {%- if loop.index == velocity_servers_try | length %}
-    "{{ item }}"
-    {%- else %}
-    "{{ item }}",
-    {%- endif %}
+{%- for key in velocity_servers.keys() %}
+    {{ key }} = "{{ velocity_servers[key] }}"
 {%- endfor %}
-]
+    try = [{%- for item in velocity_servers_try %}{%- if loop.index == velocity_servers_try | length %}"{{ item }}"{%- else %}"{{ item }}", {%- endif %}{%- endfor %}]
 
-{% if velocity_forced_hosts is defined %}
 [forced-hosts]
 {%- for key in velocity_forced_hosts.keys() %}
-"{{ key }}" = [
-    {%- for value in velocity_forced_hosts[key] %}
-        {%- if loop.index == velocity_forced_hosts[key] | length %}
-            "{{ value }}"
-        {%- else %}
-            "{{ value }}",
-        {%- endif %}
-    {%- endfor %}
-]
+    "{{ key }}" = [{%- for value in velocity_forced_hosts[key] %}{%- if loop.index == velocity_forced_hosts[key] | length %}"{{ value }}"{%- else %}"{{ value }}", {%- endif %}{%- endfor %}]
 {% endfor %}
-{% endif %}
-
 [advanced]
-{% if velocity_config_advanced_compression_threshold is defined %}compression-threshold = {{ velocity_config_advanced_compression_threshold }}{% endif %}
+        {% if velocity_config_advanced_compression_threshold is defined -%}compression-threshold = {{ velocity_config_advanced_compression_threshold }}{%- endif %}
+        {%- if velocity_config_advanced_compression_level is defined -%}compression-level = {{ velocity_config_advanced_compression_level }}{%- endif %}
+        {%- if velocity_config_advanced_login_ratelimit is defined -%}login-ratelimit = {{ velocity_config_advanced_login_ratelimit }}{%- endif %}
+        {%- if velocity_config_advanced_connection_timeout is defined -%}connection-timeout = {{ velocity_config_advanced_connection_timeout }}{%- endif %}
+        {%- if velocity_config_advanced_read_timeout is defined -%}read-timeout = {{ velocity_config_advanced_read_timeout }}{%- endif %}
+        {%- if velocity_config_advanced_haproxy_protocol is defined -%}haproxy-protocol = {{ velocity_config_advanced_haproxy_protocol }}{%- endif %}
+        {%- if velocity_config_advanced_tcp_fast_open is defined -%}tcp-fast-open = {{ velocity_config_advanced_tcp_fast_open }}{%- endif %}
+        {%- if velocity_config_advanced_bungee_plugin_message_channel is defined -%}bungee-plugin-message-channel = {{ velocity_config_advanced_bungee_plugin_message_channel | bool | lower }}{%- endif %}
+        {%- if velocity_config_advanced_show_ping_requests is defined -%}show-ping-requests = {{ velocity_config_advanced_show_ping_requests | bool | lower }}{%- endif %}
+        {%- if velocity_config_advanced_failover_on_unexpected_server_disconnect is defined -%}failover-on-unexpected-server-disconnect = {{ velocity_config_advanced_failover_on_unexpected_server_disconnect | bool | lower }}{%- endif %}
+        {%- if velocity_config_advanced_announce_proxy_commands is defined -%}announce-proxy-commands = {{ velocity_config_advanced_announce_proxy_commands | bool | lower }}{%- endif %}
+        {%- if velocity_config_advanced_log_command_executions is defined -%}log-command-executions = {{ velocity_config_advanced_log_command_executions | bool | lower }}{%- endif %}
+        {%- if velocity_config_advanced_log_player_connections is defined -%}log-player-connections = {{ velocity_config_advanced_log_player_connections | bool | lower }}{%- endif %}
 
-{% if velocity_config_advanced_compression_level is defined %}compression-level = {{ velocity_config_advanced_compression_level }}{% endif %}
-
-{% if velocity_config_advanced_login_ratelimit is defined %}login-ratelimit = {{ velocity_config_advanced_login_ratelimit }}{% endif %}
-
-{% if velocity_config_advanced_connection_timeout is defined %}connection-timeout = {{ velocity_config_advanced_connection_timeout }}{% endif %}
-
-{% if velocity_config_advanced_read_timeout is defined %}read-timeout = {{ velocity_config_advanced_read_timeout }}{% endif %}
-
-{% if velocity_config_advanced_haproxy_protocol is defined %}haproxy-protocol = {{ velocity_config_advanced_haproxy_protocol }}{% endif %}
-
-{% if velocity_config_advanced_tcp_fast_open is defined %}tcp-fast-open = {{ velocity_config_advanced_tcp_fast_open }}{% endif %}
-
-{% if velocity_config_advanced_bungee_plugin_message_channel is defined %}bungee-plugin-message-channel = {{ velocity_config_advanced_bungee_plugin_message_channel | bool | lower }}{% endif %}
-
-{% if velocity_config_advanced_show_ping_requests is defined %}show-ping-requests = {{ velocity_config_advanced_show_ping_requests | bool | lower }}{% endif %}
-
-{% if velocity_config_advanced_failover_on_unexpected_server_disconnect is defined %}failover-on-unexpected-server-disconnect = {{ velocity_config_advanced_failover_on_unexpected_server_disconnect | bool | lower }}{% endif %}
-
-{% if velocity_config_advanced_announce_proxy_commands is defined %}announce-proxy-commands = {{ velocity_config_advanced_announce_proxy_commands | bool | lower }}{% endif %}
-
-{% if velocity_config_advanced_log_command_executions is defined %}log-command-executions = {{ velocity_config_advanced_log_command_executions | bool | lower }}{% endif %}
-
-{% if velocity_config_advanced_log_player_connections is defined %}log-player-connections = {{ velocity_config_advanced_log_player_connections | bool | lower }}{% endif %}
-
+{%- if (velocity_config_query_enabled is defined) or (velocity_config_query_port is defined) or (velocity_config_query_map is defined) or (velocity_config_query_show_plugins is defined) %}
 [query]
-{% if velocity_config_query_enabled is defined %}enabled = {{ velocity_config_query_enabled | bool | lower }}{% endif %}
-
-{% if velocity_config_query_port is defined %}port = {{ velocity_config_query_port }}{% endif %}
-
-{% if velocity_config_query_map is defined %}map = "{{ velocity_config_query_map }}"{% endif %}
-
-{% if velocity_config_query_show_plugins is defined %}show-plugins = {{ velocity_config_query_show_plugins | bool | lower }}{% endif %}
+{% endif %}
+        {%- if velocity_config_query_enabled is defined -%}enabled = {{ velocity_config_query_enabled | bool | lower }}{%- endif %}
+        {%- if velocity_config_query_port is defined -%}port = {{ velocity_config_query_port }}{%- endif %}
+        {%- if velocity_config_query_map is defined -%}map = "{{ velocity_config_query_map }}"{%- endif %}
+        {%- if velocity_config_query_show_plugins is defined -%}show-plugins = {{ velocity_config_query_show_plugins | bool | lower }}{%- endif %}

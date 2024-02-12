@@ -1,28 +1,22 @@
-# Ansible Role Veloticy
+# ansible-velocity
+# work in progress
 
 Ansible role to install and configure a Veloticy Minecraft proxy on Debian-based systems.
 
 ![ansible-lint](https://github.com/sleepy-nols/ansible-velocity/actions/workflows/ansible-lint.yml/badge.svg)
 ![push-galaxy](https://github.com/sleepy-nols/ansible-velocity/actions/workflows/ansible-galaxy-push-role.yml/badge.svg)
+![Ansible Galaxy](https://img.shields.io/badge/Ansible_Galaxy-sleepy--nols.velocity-blue)
 
----
-### Install
-
-Install via Ansible Galaxy or clone the Repo.
-```
-ansible-galaxy role install sleepy-nols.veloticy
-
-git clone git@github.com:sleepy-nols/ansible-velocity.git
-```
 
 ---
 ### Variables and Defaults
 
 The default config can be found [here](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml).
 Config documentation can be found [here](https://docs.papermc.io/velocity/configuration).
+**Defaults are taken from the [current](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml) default config, but are not set until defined to allow new versions to set updated defaults. They may need to be updated here sometime.**
 
 ---
-#### Mandatory:
+#### General config:
 
 ```yml
 velocity_servers:
@@ -30,7 +24,7 @@ velocity_servers:
   factions: "127.0.0.1:30067"
   minigames: "127.0.0.1:30068"
 ```
-Configure your servers here. Each key represents the server's name, and the value represents the IP address of the server to connect to.
+Configure your servers here. Each key represents the server's name and the value the IP address of the server to connect to.
 
 ```yml
 velocity_servers_try:
@@ -38,8 +32,6 @@ velocity_servers_try:
   - "minigames"
 ```
 In what order we should try servers when a player logs in or is kicked from a server.
-
-#### Optional:
 
 ```yml
 velocity_forced_hosts:
@@ -50,11 +42,24 @@ velocity_forced_hosts:
 ```
 Bind specific domains to servers.
 
+```yml
+velocity_java_executable: "/usr/bin/java"
+```
+Path to java executable.
 
-**Defaults are taken from the [current](https://github.com/PaperMC/Velocity/blob/dev/3.0.0/proxy/src/main/resources/default-velocity.toml) default config, but are not set until defined to allow new versions to set updated defaults. They may need to be updated here sometime.**
+```yml
+velocity_initial_memory: "1G"
+velocity_max_memory: "1G"
+```
+Java memory opts.
+
+```yml
+velocity_java_options: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:MaxInlineLevel=15"
+```
+Java opts.
 
 ---
-##### Velocity config: #####
+#### Velocity config:
 
 ```yml
 velocity_config_version: "2.6"
@@ -65,7 +70,6 @@ This is the current config version used by Velocity. You should not alter this s
 velocity_config_bind: "0.0.0.0:25577"
 ```
 This tells the proxy to accept connections on a specific IP. By default, Velocity will listen for connections on all IP addresses on the computer on port 25577.
-
 
 ```yml
 velocity_config_motd: "<#09add3>A Velocity Server"
@@ -78,17 +82,17 @@ velocity_config_show_max_players: 500
 This allows you to customize the number of "maximum" players in the player's server list. Note that Velocity doesn't have a maximum number of players it supports.
 
 ```yml
-velocity_config_online_mode: True
+velocity_config_online_mode: true
 ```
 Should we authenticate players with Mojang?
 
 ```yml
-velocity_config_force_key_authentication: True
+velocity_config_force_key_authentication: true
 ```
 Should the proxy enforce the new public key security standard?
 
 ```yml
-velocity_config_prevent_client_proxy_connections: False
+velocity_config_prevent_client_proxy_connections: false
 ```
 If client's ISP/AS sent from this proxy is different from the one from Mojang's authentication server, the player is kicked. This disallows some VPN and proxy connections but is a weak form of protection.
 
@@ -111,12 +115,12 @@ velocity_config_forwarding_secret_file: "forwarding.secret"
 The name of the file in which the forwarding secret is stored. This secret is used to ensure that player info forwarded by Velocity comes from your proxy and not from someone pretending to run Velocity. See the "Player info forwarding" section for more info.
 
 ```yml
-velocity_config_announce_forge: False
+velocity_config_announce_forge: false
 ```
 This setting determines whether Velocity should present itself as a Forge/FML-compatible server.
 
 ```yml
-velocity_config_kick_existing_players: False
+velocity_config_kick_existing_players: false
 ```
 Allows restoring the vanilla behavior of kicking users on the proxy if they try to reconnect (e.g. lost internet connection briefly).
 
@@ -132,13 +136,13 @@ Available options:
 - "all: Uses the backend server's response as the proxy response. The Velocity configuration is used if no servers could be contacted.
 
 ```yml
-velocity_config_enable_player_address_logging: True
+velocity_config_enable_player_address_logging: true
 ```
 If disabled, player IP addresses will be replaced by <ip address withheld> in logs.
 
 
 ---
-##### Velocity advanced config:
+#### Velocity advanced config:
 ```yml
 velocity_config_advanced_compression_threshold: 256
 ```
@@ -165,50 +169,50 @@ velocity_config_advanced_read_timeout: 30000
 This setting determines how long the proxy will wait to receive data from the server before timing out.
 
 ```yml
-velocity_config_advanced_haproxy_protocol: False
+velocity_config_advanced_haproxy_protocol: false
 ```
 This setting determines whether or not Velocity should receive HAProxy PROXY messages. If you don't use HAProxy, leave this setting off.
 
 ```yml
-velocity_config_advanced_tcp_fast_open: False
+velocity_config_advanced_tcp_fast_open: false
 ```
 This setting allows you to enable TCP Fast Open support in Velocity. Your proxy must run on Linux kernel >=4.14 for this setting to apply.
 
 ```yml
-velocity_config_advanced_bungee_plugin_message_channel: True
+velocity_config_advanced_bungee_plugin_message_channel: true
 ```
 This setting allows you to enable or disable support for the BungeeCord plugin messaging channel.
 
 ```yml
-velocity_config_advanced_show_ping_requests: False
+velocity_config_advanced_show_ping_requests: false
 ```
 This setting allows you to log ping requests sent by clients to the proxy.
 
 ```yml
-velocity_config_advanced_failover_on_unexpected_server_disconnect: True
+velocity_config_advanced_failover_on_unexpected_server_disconnect: true
 ```
 This setting allows you to determine if the proxy should failover or disconnect the user in the event of an unclean disconnect.
 
 ```yml
-velocity_config_advanced_announce_proxy_commands: True
+velocity_config_advanced_announce_proxy_commands: true
 ```
 This setting allows you to enable or disable explicitly sending proxy commands to the client (for Minecraft 1.13+ tab completion).
 
 ```yml
-velocity_config_advanced_log_command_executions: False
+velocity_config_advanced_log_command_executions: false
 ```
 Determines whether or not the proxy should log all commands run by the user.
 
 ```yml
-velocity_config_advanced_log_player_connections: True
+velocity_config_advanced_log_player_connections: true
 ```
 Enables logging of player connections when connecting to the proxy, switching servers and disconnecting from the proxy.
 
 
 ---
-##### Velocity query config:
+#### Velocity query config:
 ```yml
-velocity_config_query_enabled: False
+velocity_config_query_enabled: false
 ```
 Whether or not Velocity should reply to Minecraft query protocol requests. You can usually leave this false.
 ```yml
@@ -222,9 +226,19 @@ velocity_config_query_map: "Velocity"
 Specifies the map name to be shown to clients.
 
 ```yml
-velocity_config_query_show_plugins: False
+velocity_config_query_show_plugins: false
 ```
 Whether or not Velocity plugins are included in the query responses.
+
+---
+### Install
+
+Install via Ansible Galaxy or clone the Repo.
+```
+ansible-galaxy role install sleepy-nols.veloticy
+
+git clone git@github.com:sleepy-nols/ansible-velocity.git
+```
 
 ---
 ### Example Playbook
