@@ -1,27 +1,22 @@
 ---
-
-- name: Make systemd unit dir
-  file:
-    path:
-      - "/etc/systemd/system/{{ velocity_user }}.service.d"
-      - "/etc/systemd/system/{{ velocity_user }}.socket.d"
-    state: directory
-    mode: 755
-    owner: "root"
-    group: "root"
-
 - name: Make systemd service
-  template:
+  ansible.builtin.template:
     src: "templates/velocity.service.jinja"
-    dest: "/etc/systemd/system/{{ velocity_user }}.service.d/{{ velocity_user }}.service"
+    dest: "/etc/systemd/system/{{ velocity_unix_user }}.service"
     mode: 755
     owner: "root"
     group: "root"
+  notify:
+    - Reload systemd
+    - Restart Velocity service
 
-- name: Make systemd service
-  template:
+- name: Make systemd socket
+  ansible.builtin.template:
     src: "templates/velocity.socket.jinja"
-    dest: "/etc/systemd/system/{{ velocity_user }}.socket.d/{{ velocity_user }}.socket"
+    dest: "/etc/systemd/system/{{ velocity_unix_user }}.socket"
     mode: 755
     owner: "root"
     group: "root"
+  notify:
+    - Reload systemd
+    - Restart Velocity socket

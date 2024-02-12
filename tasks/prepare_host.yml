@@ -1,9 +1,10 @@
 ---
 
 - name: Create user
-  user:
-    name: "{{ velocity_user }}"
+  ansible.builtin.user:
+    name: "{{ velocity_unix_user }}"
     state: present
+    create_home: False
 
 - name: Install Java
   apt:
@@ -17,6 +18,9 @@
     release: "{{ velocity_version }}"
 
 - name:
-  file:
+  ansible.builtin.file:
     path: "{{ deploy_helper.new_release_path }}"
     state: directory
+    owner: "{{ velocity_unix_user }}"
+    group: "{{ velocity_unix_group }}"
+    mode: "744"

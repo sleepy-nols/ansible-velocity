@@ -1,13 +1,14 @@
 ---
-
 - name: Get latest Velocity version
   uri:
     url: "https://api.papermc.io/v2/projects/velocity"
     method: GET
   register: velocity_version_info
-  when: velocity_version is in velocity_available_relaese_branches
+  when: velocity_version is in velocity_available_release_branches
+  changed_when: False
 
-- set_fact:
+- name: Decide if to use latest version
+  ansible.builtin.set_fact:
     velocity_latest_versions: |
       [{%- if velocity_version in ['stable', 'snapshot'] -%}
         {%- for version in velocity_version_info.json.versions -%}
@@ -21,38 +22,41 @@
       {%- endif -%}]
 
 - name: Set latest Velocity version
-  set_fact:
+  ansible.builtin.set_fact:
     velocity_version: "{{ velocity_latest_versions[-1] }}"
+  changed_when: False
 
 - name: Get Velocity build info
   uri:
     url: "https://api.papermc.io/v2/projects/velocity/versions/{{ velocity_version }}/builds"
     method: GET
   register: velocity_build_info
+  changed_when: False
 
 - name: Set latest Velocity build and checksum
-  set_fact:
+  ansible.builtin.set_fact:
     velocity_latest_build: "{{ velocity_build_info.json.builds[-1].build }}"
     velocity_checksum: "{{ velocity_build_info.json.builds[-1].downloads.application.sha256 }}"
   when: velocity_build is not defined or velocity_build|string|length==0
+  changed_when: False
 
 - name: Build download URI
-  set_fact:
+  ansible.builtin.set_fact:
     velocity_url: "https://api.papermc.io/v2/projects/velocity/versions/{{ velocity_version }}/builds/{{ velocity_build | default(velocity_latest_build) }}/downloads/velocity-{{ velocity_version }}-{{ velocity_build | default(velocity_latest_build) }}.jar"
   when: velocity_url is not defined or velocity_url|length==0
+  changed_when: False
 
 - name: Download Velocity proxy
   get_url:
     url: "{{ velocity_url }}"
     dest: "{{ deploy_helper.new_release_path }}/velocity-{{ velocity_version }}.jar"
-    owner: "{{ velocity_user }}"
-    group: "{{ velocity_group }}"
+    owner: "{{ velocity_unix_user }}"
+    group: "{{ velocity_unix_group }}"
+    mode: '0744'
     checksum: "sha256:{{ velocity_checksum }}"
-    mode: '0755'
 
-- name: Finalize the deploy, removing the unfinished file and switching the symlink
-  deploy_helper:
-    path: "{{ velocity_rootdir }}"
-    release: '{{ deploy_helper.new_release }}'
-    state: finalize
-
+- name: Add an unfinished file, to allow cleanup on successful finalize
+  ansible.builtin.file:
+    path: '{{ deploy_helper.new_release_path }}/{{ deploy_helper.unfinished_filename }}'
+    state: touch
+  changed_when: false

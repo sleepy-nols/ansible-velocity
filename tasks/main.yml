@@ -1,5 +1,4 @@
 ---
-
 - name: Prepare host
   include_tasks: prepare_host.yml
 
@@ -9,7 +8,6 @@
 - name: Install Velocity
   include_tasks: install.yml
 
-
-# handle config
-
+- name: Systemd
+  include_tasks: systemd.yml
 # handle restart\reload with handler

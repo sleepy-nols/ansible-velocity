@@ -1,9 +1,35 @@
 ---
-velocity_version: stable
+velocity_version: stable # stable, snapshot or specific version
 velocity_name: velocity
 velocity_unix_user: "{{ velocity_name }}"
 velocity_unix_group: "{{ velocity_name }}"
 velocity_rootdir: "/opt/velocity"
+velocity_console_fifo_path: "/run/{{ velocity_name }}/console"
+velocity_console_fifo_mode: "0665"
+velocity_skip_restart: false ###
 
-velocity_skip_install_java: false
-velocity_java_executable: /usr/bin/java
+velocity_skip_install_java: False
+velocity_java_executable: "/usr/bin/java"
+velocity_java_options: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch -XX:MaxInlineLevel=15"
+
+velocity_initial_memory: "1G"
+velocity_max_memory: "1G"
+
+
+
+
+
+# remove on prod
+velocity_servers:
+  lobby: "127.0.0.1:30066"
+  aaaabbbb: "127.0.0.1:30063"
+velocity_servers_try:
+  - "lobby"
+  - "aaaabbbb"
+
+velocity_forced_hosts:
+  "lobby.example.com":
+    - "lobby"
+  "test.test":
+    - "aaaabbbb"
+velocity_forwarding_secret: 9hYZxcrih4v8

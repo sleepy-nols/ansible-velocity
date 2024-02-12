@@ -3,13 +3,13 @@
 #
 
 [Unit]
-Description={{ minecraft_service_name | title }} Server Console
+Description={{ velocity_name | title }} Server Console
 
 [Socket]
-ListenFIFO={{ minecraft_console_fifo }}
-SocketUser={{ minecraft_user }}
-SocketGroup={{ minecraft_group }}
-SocketMode={{ minecraft_console_fifo_mode }}
+ListenFIFO={{ velocity_console_fifo_path }}
+SocketUser={{ velocity_unix_user }}
+SocketGroup={{ velocity_unix_group }}
+SocketMode={{ velocity_console_fifo_mode }}
 RemoveOnStop=true
 
 [Install]

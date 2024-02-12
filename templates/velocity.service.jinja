@@ -7,21 +7,21 @@ Description={{ velocity_name | title }} Server
 After=network.target
 Requires={{ velocity_name }}.socket
 
-# The server will sometimes crash after issuing `stop`. Thus we `save-all` and
-# consider 143 a successful exit code. See: <https://bugs.mojang.com/browse/MC-38134>
 [Service]
+Type=simple
 User={{ velocity_unix_user }}
 Group={{ velocity_unix_group }}
 WorkingDirectory={{ deploy_helper.shared_path }}
+ExecStart={{ velocity_java_executable }} -Xmx{{ velocity_max_memory }} -Xms{{ velocity_initial_memory }} {{ velocity_java_options }} -jar velocity.jar nogui
+ExecStop=/bin/sh -c "echo 'end' > {{ velocity_console_fifo_path }}"
+# TTYPath=/dev/tty
+# TTYVHangup=yes
+# KillMode=process
+
 StandardInput=socket
 StandardOutput=journal
 StandardError=journal
-ExecStart={{ velocity_java_executable }} -Xmx{{ minecraft_max_memory }} -Xms{{ minecraft_initial_memory }} -Dlog4j.configurationFile={{ minecraft_external_log_conf.conf_file | default('log4j2.xml') }} -Dlog4j2.formatMsgNoLookups=true {{ minecraft_server_java_ops }} -jar {{ minecraft_jar }} nogui
-ExecStop=/bin/sh -c "echo 'save-all' > {{ minecraft_console_fifo }}"
-ExecStop=/bin/sh -c "echo 'stop' > {{ minecraft_console_fifo }}"
 Restart=on-failure
-SuccessExitStatus=143
-RestartPreventExitStatus=143
 ProtectHome=true
 ProtectSystem=full
 PrivateTmp=true
